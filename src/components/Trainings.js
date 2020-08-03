@@ -52,7 +52,7 @@ export default function Trainings(props) {
         <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title">{'Trainings - ' + props.customer.firstname + " " + props.customer.lastname}</DialogTitle>
                 <DialogContent>
-                    <ReactTable pageSize={10} data={trainings} columns={columns}/>
+                    <ReactTable filterable={true} pageSize={10} data={trainings} columns={columns}/>
                 </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color="primary">Close</Button>
