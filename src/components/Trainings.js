@@ -51,13 +51,16 @@ export default function Trainings(props) {
     const [open, setOpen] = useState(false)
     const [trainings, setTrainings] = useState([])
 
+    const fetchData = () => {
+        fetch(props.customer.links[2].href)
+        .then(response => response.json())
+        .then(data => setTrainings(data.content))
+    }
 
     const handleClickOpen = () => {
         console.log(props.customer)
         setOpen(true)
-        fetch(props.customer.links[2].href)
-        .then(response => response.json())
-        .then(data => setTrainings(data.content))
+        fetchData()
     }
 
     const handleClose = () => {
@@ -69,7 +72,7 @@ export default function Trainings(props) {
         {
            title: 'Date',
            field: 'date',
-           render: row => moment(row.value).format('MMMM Do YYYY') 
+           render: rowData => moment(rowData.date).format('MMMM Do YYYY') 
         },
         {
            title: 'Duration (min)',
@@ -81,6 +84,33 @@ export default function Trainings(props) {
          },
     ]
 
+    const saveTraining = (training) => {
+        console.log(training)
+        console.log(props.customer)
+        fetch("https://customerrest.herokuapp.com/api/trainings/", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                "date":  moment(training.date).toISOString(),
+                "activity": training.activity,
+                "duration": training.duration,
+                "customer": props.customer.links[0].href
+            })
+        })
+        .then(res => fetchData())
+        .catch(err => console.error(err))
+      }
+      
+  
+     const updateTraining = (training, link) => {
+        
+     }  
+  
+     const deleteTraining = (link) => {
+       
+     }
+  
+
 
     return ( 
         <div>
@@ -90,7 +120,38 @@ export default function Trainings(props) {
         <Dialog fullWidth={true} open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
             <DialogTitle>Trainings</DialogTitle>
             <DialogContent>
-                <MaterialTable emptyRowsWhenPaging={false} icons={tableIcons} title={props.customer.firstname + " " + props.customer.lastname} filterable={true} data={trainings} columns={columns}/>
+                <MaterialTable 
+                    emptyRowsWhenPaging={false} 
+                    icons={tableIcons} 
+                    title={props.customer.firstname + " " + props.customer.lastname} 
+                    filterable={true} 
+                    fullWidth={true}
+                    data={trainings} 
+                    columns={columns}
+                    editable={{
+                        onRowAdd: (newData) =>
+                           new Promise((resolve) => {
+                              setTimeout(() => {
+                                 saveTraining(newData)
+                                 resolve();
+                              }, 500)
+                           }),
+                        onRowUpdate: (newData, rowData) => 
+                           new Promise((resolve) => {
+                              setTimeout(() => {
+                                 updateTraining(newData, rowData.links[0].href)
+                                 resolve();
+                              }, 500)
+                       }),
+                        onRowDelete: (rowData) => 
+                            new Promise((resolve) => {
+                            setTimeout(() => {
+                                deleteTraining(rowData.links[0].href)
+                                resolve();
+                            }, 500)
+                        }),
+                     }}
+                />
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color="primary">Close</Button>

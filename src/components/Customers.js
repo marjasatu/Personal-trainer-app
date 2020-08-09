@@ -44,36 +44,31 @@ export default function Customers() {
     }
     
     const [customers, setCustomers] = useState([])
-    
-    useEffect(() => fetchData(), [])
-    
-    const fetchData = () => {
-        fetch("https://customerrest.herokuapp.com/api/customers")
-        .then(response => response.json())
-        .then(data => setCustomers(data.content))
-    }
-
-   const columns = [
-      
+    const columns = [
       {
          title: 'Firstname',
-         field: 'firstname'
+         field: 'firstname',
+         type: 'string' 
       },
       {
          title: 'Lastname',
-         field: 'lastname' 
+         field: 'lastname',
+         type: 'string' 
       },
       {
          title: 'Streetaddress',
-         field: 'streetaddress' 
+         field: 'streetaddress',
+         type: 'string' 
       },
       {
          title: 'Postcode',
-         field: 'postcode' 
+         field: 'postcode',
+         type: 'string' 
       },
       {
          title: 'City',
-         field: 'city' 
+         field: 'city',
+         type: 'string' 
       },
       {
          title: 'Email',
@@ -85,12 +80,83 @@ export default function Customers() {
       },
       {
          render: rowData => <Trainings customer={rowData} /> 
-      },        
+      }, 
+      
     ]
+    
+    useEffect(() => fetchData(), [])
+    
+    const fetchData = () => {
+        fetch("https://customerrest.herokuapp.com/api/customers")
+        .then(response => response.json())
+        .then(data => setCustomers(data.content))
+    }
+
+    const saveCustomer = (customer) => {
+      fetch("https://customerrest.herokuapp.com/api/customers", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(customer)
+        })
+        .then(res => fetchData())
+        .catch(err => console.error(err))
+    }
+    
+
+   const updateCustomer = (newData, row) => {
+      fetch(row.links[0].href, {
+         method: 'PUT',
+         headers: {'Content-Type': 'application/json'},
+         body: JSON.stringify(newData)
+      })
+      .then(res => fetchData())
+      .catch(err => console.error(err))
+   }  
+
+   const deleteCustomer = (row) => {
+      fetch(row.links[0].href, {method: 'DELETE'})
+      .then(res => fetchData())
+      .catch(err => console.error(err))
+   }
+
 
     return ( 
         <div>
-            <MaterialTable  title='Customers' options={{pageSize: 20}} icons={tableIcons} filterable={true} data={customers} columns={columns} />
+            <MaterialTable  
+               title='Customers' 
+               options={{pageSize: 20}}
+               icons={tableIcons}
+               filterable={true}
+               data={customers}
+               columns={columns}
+               
+               editable={{
+                  onRowAdd: (newData) =>
+                     new Promise((resolve) => {
+                        setTimeout(() => {
+                           saveCustomer(newData)
+                           resolve();
+                        }, 500)
+                     }),
+                  onRowUpdate: (newData, rowData) => 
+                     new Promise((resolve) => {
+                        setTimeout(() => {
+                           updateCustomer(newData, rowData)
+                           resolve();
+                        }, 500)
+                 }),
+                  onRowDelete: (rowData) => 
+                  new Promise((resolve) => {
+                     setTimeout(() => {
+                        deleteCustomer(rowData)
+                        resolve();
+                     }, 500)
+                   }),
+               }}
+               
+            />
         </div>
+
+        
     )
 }
