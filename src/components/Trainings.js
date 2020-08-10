@@ -72,7 +72,7 @@ export default function Trainings(props) {
         {
            title: 'Date',
            field: 'date',
-           render: rowData => moment(rowData.date).format('MMMM Do YYYY') 
+           render: rowData => moment(rowData.date).format('MMMM Do YYYY')            
         },
         {
            title: 'Duration (min)',
@@ -102,12 +102,26 @@ export default function Trainings(props) {
       }
       
   
-     const updateTraining = (training, link) => {
+     const updateTraining = (newData, row) => {
+        fetch(row.links[0].href, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                "date":  moment(newData.date).toISOString(),
+                "activity": newData.activity,
+                "duration": newData.duration,
+                "customer": props.customer.links[0].href
+            })
+        })
+        .then(res => fetchData())
+        .catch(err => console.error(err))
         
      }  
   
-     const deleteTraining = (link) => {
-       
+     const deleteTraining = (row) => {
+        fetch(row.links[0].href, {method: 'DELETE'})
+        .then(res => fetchData())
+        .catch(err => console.error(err))
      }
   
 
@@ -139,14 +153,14 @@ export default function Trainings(props) {
                         onRowUpdate: (newData, rowData) => 
                            new Promise((resolve) => {
                               setTimeout(() => {
-                                 updateTraining(newData, rowData.links[0].href)
+                                 updateTraining(newData, rowData)
                                  resolve();
                               }, 500)
                        }),
                         onRowDelete: (rowData) => 
                             new Promise((resolve) => {
                             setTimeout(() => {
-                                deleteTraining(rowData.links[0].href)
+                                deleteTraining(rowData)
                                 resolve();
                             }, 500)
                         }),

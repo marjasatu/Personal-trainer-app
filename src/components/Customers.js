@@ -124,11 +124,12 @@ export default function Customers() {
         <div>
             <MaterialTable  
                title='Customers' 
-               options={{pageSize: 20}}
+               options={{pageSize: 20, addRowPosition:'first'}}
                icons={tableIcons}
                filterable={true}
                data={customers}
                columns={columns}
+               
                
                editable={{
                   onRowAdd: (newData) =>
