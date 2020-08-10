@@ -136,10 +136,10 @@ export default function Trainings(props) {
             <DialogContent>
                 <MaterialTable 
                     emptyRowsWhenPaging={false} 
-                    icons={tableIcons} 
+                    icons={tableIcons}
+                    options={{addRowPosition:'first'}}
                     title={props.customer.firstname + " " + props.customer.lastname} 
                     filterable={true} 
-                    fullWidth={true}
                     data={trainings} 
                     columns={columns}
                     editable={{
