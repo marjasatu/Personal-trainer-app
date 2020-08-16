@@ -123,7 +123,7 @@ export default function Customers() {
     return ( 
         <div>
             <MaterialTable  
-               title='Customers' 
+               title= {<h1 style={{textAlign: "left"}} >Customers </h1>}
                options={{pageSize: 20, addRowPosition:'first'}}
                icons={tableIcons}
                filterable={true}

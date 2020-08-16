@@ -72,7 +72,7 @@ export default function Trainings(props) {
         {
            title: 'Date',
            field: 'date',
-           render: rowData => moment(rowData.date).format('MMMM Do YYYY')            
+           render: rowData => moment(rowData.date).format('MMMM Do YYYY, h:mm a')            
         },
         {
            title: 'Duration (min)',
